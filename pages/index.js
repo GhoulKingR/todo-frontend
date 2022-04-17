@@ -1,11 +1,10 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import TodoItem from '../components/TodoItem';
+
 
 export default function Home() {
   const [todos, setTodos] = useState([]);
-  let newTodo = useRef(null);
-  let todoPos = useRef(null);
-  let newTodoChange = useRef(null);
-  let delTodoPos = useRef(null);
+  const [newTodo, setNewTodo] = useState("");
 
   useEffect(() => {
     update();
@@ -21,7 +20,7 @@ export default function Home() {
 
   function addTodo(e) {
     e.preventDefault();
-    let item = newTodo.current.value;
+    let item = newTodo;
     let body = {
       data: {
         item
@@ -36,40 +35,7 @@ export default function Home() {
       body: JSON.stringify(body)
     })
       .then(() => {
-        update();
-      })
-  }
-
-  function changeTodo(e) {
-    e.preventDefault();
-    let item = newTodoChange.current.value;
-    let pos = todoPos.current.value;
-    let body = {
-      data: {
-        item
-      }
-    };
-
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND}api/todos/${pos}`, {
-      method: "PUT",
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
-      .then(() => {
-        update();
-      })
-  }
-
-  function deleteTodo(e) {
-    e.preventDefault();
-    let pos = delTodoPos.current.value;
-  
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND}api/todos/${pos}`, {
-      method: "DELETE"
-    })
-      .then(() => {
+        setNewTodo("");
         update();
       })
   }
@@ -77,41 +43,20 @@ export default function Home() {
   return (
     <div>
       <main>
+
         <form onSubmit={addTodo}>
-          <input type="text" placeholder="Enter new todo" ref={newTodo}/>
+          <input type="text" placeholder="Enter new todo" value={newTodo} onChange={e => setNewTodo(e.currentTarget.value) }/>
           <button type="submit">Add todo</button>
         </form>
 
-        <ul>
+        <div>
           {
             todos.map((todo, i) => {
-              return <li key={i}>{todo.attributes.item}</li>
+              return <TodoItem todo={todo} key={i} update={update} />
             })
           }
-        </ul>
+        </div>
 
-        <form onSubmit={changeTodo}>
-          <select ref={todoPos}>
-            {
-              todos.map((todo, i) => {
-                return <option key={i} value={todo.id}>{i + 1}</option>
-              })
-            }
-          </select>
-          <input type="text" placeholder="Enter new todo" ref={newTodoChange} />
-          <button type="submit">Change todo</button>
-        </form>
-
-        <form onSubmit={deleteTodo}>
-          <select ref={delTodoPos}>
-            {
-              todos.map((todo, i) => {
-                return <option key={i} value={todo.id}>{i + 1}</option>
-              })
-            }
-          </select>
-          <button type="submit">Delete todo</button>
-        </form>
       </main>
     </div>
   )
