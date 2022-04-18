@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import TodoItem from '../components/TodoItem';
+import style from '../styles/Home.module.css';
 
 
 export default function Home() {
@@ -41,12 +42,12 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <div className={style.app}>
       <main>
 
-        <form onSubmit={addTodo}>
-          <input type="text" placeholder="Enter new todo" value={newTodo} onChange={e => setNewTodo(e.currentTarget.value) }/>
-          <button type="submit">Add todo</button>
+        <form className={style.form} onSubmit={addTodo}>
+          <input type="text" className={style.todo_input} placeholder="Enter new todo" value={newTodo} onChange={e => setNewTodo(e.currentTarget.value) }/>
+          <button type="submit" className={style.todo_button}>Add todo</button>
         </form>
 
         <div>
